@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
+from solid.transition import Transition, START
 
 
 def is_entry_state(state_class):
@@ -32,8 +33,7 @@ def is_entry_state(state_class):
     def new_run(self, **kwargs):
         previous_transition = kwargs.pop('previous_transition', None)
         if previous_transition is None:
-            previous_transition = Transition(state_class, **kwargs)
-            previous_transition.origin = START
+            previous_transition = Transition(state_class, origin=START, **kwargs)
 
         return old_run(
             self,

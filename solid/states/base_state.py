@@ -20,7 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 import re
 
-from solid.transition import Transition, END, START
+from solid.transition import Transition, END
+from solid.util import ReadOnlyStateWrapper
 
 
 class BaseState(object):
@@ -100,10 +101,7 @@ class BaseState(object):
 
         next_state_transition = self.body(**previous_transition.kwargs)
         if next_state_transition is None:
-            next_state_transition = Transition(END)
-
-        # set origin on transition
-        next_state_transition.origin = self.__class__
+            next_state_transition = Transition(END, origin=self.__class__)
 
         # on_exit can override the next_state for whatever reason (error
         # transitioning, for example)

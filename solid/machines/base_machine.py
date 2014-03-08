@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
-from solid.state import BaseState
+from solid.states import BaseState
 from solid.transition import END
 
 
@@ -27,9 +27,10 @@ class _BaseMachineMeta(type):
 
     def __new__(cls, name, bases, attrs):
         # do the normal instantiation
-        machine_class = super(StateMachineMeta, cls).__new__(cls, name, bases, attrs)
+        machine_class = super(_BaseMachineMeta, cls).__new__(cls, name, bases, attrs)
 
-        # add a unique State inner base class to every instance of StateMachineMeta
+        # add a unique State inner base class to every instance of
+        # _BaseMachineMeta
         state_class = type(
             "{}State".format(name),
             (cls.STATE_CLASS,),
@@ -49,7 +50,7 @@ class _BaseMachineMeta(type):
 
         # re-instantiate, with the new State classes
         attrs['_states'] = states
-        machine_class = super(StateMachineMeta, cls).__new__(cls, name, bases, attrs)
+        machine_class = super(_BaseMachineMeta, cls).__new__(cls, name, bases, attrs)
         machine_class.State = state_class
         return machine_class
 

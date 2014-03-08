@@ -22,10 +22,10 @@ from collections import namedtuple
 
 class Transition(object):
 
-    def __init__(self, target, **kwargs):
+    def __init__(self, target, origin=None, **kwargs):
         self._target_state_class = target
         self._target_kwargs = kwargs
-        self.origin = None
+        self.origin = origin
 
     @property
     def target(self):
