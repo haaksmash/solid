@@ -102,6 +102,8 @@ class BaseState(object):
         next_state_transition = self.body(**previous_transition.kwargs)
         if next_state_transition is None:
             next_state_transition = Transition(END, origin=self.__class__)
+        if next_state_transition.origin is None:
+            next_state_transition.origin = self.__class__
 
         # on_exit can override the next_state for whatever reason (error
         # transitioning, for example)
