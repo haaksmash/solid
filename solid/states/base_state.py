@@ -17,10 +17,10 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
+
 import re
 
 from solid.transition import Transition, END, START
-from solid.util import ReadOnlyStateWrapper
 
 
 class BaseState(object):
@@ -110,33 +110,4 @@ class BaseState(object):
         next_state_transition = self.on_exit(ReadOnlyStateWrapper(next_state_transition)) or next_state_transition
 
         return next_state_transition
-
-
-def is_entry_state(state_class):
-    """marks a state as a valid initial state for a machine, which means the
-    following changes are made:
-        1. the run() method is patched to not need as incoming_transition
-        2. a __call__ method is applied to the state so it can be used like a
-           function.
-    """
-    state_class.IS_ENTRY_STATE = True
-    # patch the run method so it doesn't need an explicit transition
-    old_run = state_class.run
-    def new_run(self, **kwargs):
-        previous_transition = kwargs.pop('previous_transition', None)
-        if previous_transition is None:
-            previous_transition = Transition(state_class, **kwargs)
-            previous_transition.origin = START
-
-        return old_run(
-            self,
-            previous_transition,
-        )
-    state_class.run = new_run
-
-    def new_call(self, **body_args):
-        return self.run(**body_args)
-    state_class.__call__ = new_call
-
-    return state_class
 
