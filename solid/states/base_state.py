@@ -26,6 +26,8 @@ from solid.util import ReadOnlyStateWrapper
 
 class BaseState(object):
 
+    IS_ENTRY_STATE = False
+
     def __init__(self, parent_machine):
         self._parent_machine = parent_machine
 
