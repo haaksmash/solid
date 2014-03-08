@@ -79,7 +79,6 @@ class BaseMachine(object):
     def start(self, **kwargs):
         transition = self._entry_state(**kwargs)
         while transition.target is not END:
-            print transition
             transition = self._initialized_states[transition.target].run(
                 previous_transition=transition,
             )
