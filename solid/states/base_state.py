@@ -75,6 +75,9 @@ class BaseState(object):
             transition --- how we got here """
         pass
 
+    def do_body(self, previous_transition):
+        return self.body(**previous_transition.kwargs)
+
     def body(self, **body_args):
         """do the work of the state. subclasses must implement this method.
 
@@ -97,17 +100,19 @@ class BaseState(object):
     def run(self, previous_transition):
         """You probably don't want to override this method."""
 
-        self.on_entry(ReadOnlyStateWrapper(previous_transition))
+        if self.on_entry(ReadOnlyStateWrapper(previous_transition)) is False:
+            # abort if the on_entry is False
+            return Transition(END, self.__class__)
+        else:
+            next_state_transition = self.do_body(previous_transition)
+            if next_state_transition is None:
+                next_state_transition = Transition(END, origin=self.__class__)
+            if next_state_transition.origin is None:
+                next_state_transition.origin = self.__class__
 
-        next_state_transition = self.body(**previous_transition.kwargs)
-        if next_state_transition is None:
-            next_state_transition = Transition(END, origin=self.__class__)
-        if next_state_transition.origin is None:
-            next_state_transition.origin = self.__class__
+            # on_exit can override the next_state for whatever reason (error
+            # transitioning, for example)
+            next_state_transition = self.on_exit(ReadOnlyStateWrapper(next_state_transition)) or next_state_transition
 
-        # on_exit can override the next_state for whatever reason (error
-        # transitioning, for example)
-        next_state_transition = self.on_exit(ReadOnlyStateWrapper(next_state_transition)) or next_state_transition
-
-        return next_state_transition
+            return next_state_transition
 
