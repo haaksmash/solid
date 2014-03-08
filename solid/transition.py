@@ -40,3 +40,6 @@ class Transition(object):
 
 END = namedtuple('END', [])()
 START= namedtuple('START', [])()
+
+def to(target, **kwargs):
+    return Transition(target, None, **kwargs)
