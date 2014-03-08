@@ -20,24 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 import re
 
 from solid.transition import Transition, END, START
-
-
-class ReadOnlyStateWrapper(object):
-
-    def __init__(self, state_instance):
-        self._state_instance = state_instance
-
-    def __setattr__(self, name, value):
-        if name == "_state_instance":
-            super(ReadOnlyStateWrapper, self).__setattr__(name, value)
-        else:
-            raise AttributeError(u"Can't set attribute -- ReadOnlyWrapped object.")
-
-    def __getattr__(self, name):
-        return getattr(self._state_instance, name)
-
-    def __repr__(self):
-        return u"<ReadOnly:{}>".format(self._state_instance)
+from solid.util import ReadOnlyStateWrapper
 
 
 class BaseState(object):
