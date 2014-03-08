@@ -21,7 +21,7 @@ from solid.state import BaseState
 from solid.transition import END
 
 
-class StateMachineMeta(type):
+class _BaseMachineMeta(type):
 
     STATE_CLASS = BaseState
 
@@ -54,9 +54,9 @@ class StateMachineMeta(type):
         return machine_class
 
 
-class StateMachine(object):
+class BaseMachine(object):
 
-    __metaclass__ = StateMachineMeta
+    __metaclass__ = _BaseMachineMeta
 
     def __init__(self):
         self._return_value = None
@@ -86,3 +86,4 @@ class StateMachine(object):
         """ call this method from a terminal state to give the state machine's
         run a summary return value"""
         self._return_value = value
+
