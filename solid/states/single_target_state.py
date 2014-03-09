@@ -22,6 +22,26 @@ from solid.transition import to
 
 
 class SingleTargetState(BaseState):
+    """Shorthand state that will automatically transition to the state
+    registered through SingleTargetState.next_state --- just have bod() return
+    a dictionary, and SingleTargetState will take care of constructing a
+    Transition for you:
+
+        class MyMachine(BaseMachine):
+            class LazyState(SingleTargetState):
+                def body():
+                    #...
+                    return {
+                        'your': keys,
+                        'go': here,
+                    }
+
+            @LazyState.next_state
+            class StudiousState(BaseState):
+                def body(your, go):
+                    ...
+    """
+
 
     @classmethod
     def next_state(cls, state_class):
