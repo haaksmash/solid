@@ -64,7 +64,6 @@ class BaseMachine(object):
         # instantiate the states for this instance of the machine
         for name, value in self._states.iteritems():
             state = value(parent_machine=self)
-            import ipdb;ipdb.set_trace() # FIXME: breakpoint!
             if value.IS_ENTRY_STATE:
                 new_name = value.get_instance_attr_name()
                 self._entry_state = state
