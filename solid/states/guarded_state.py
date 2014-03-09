@@ -42,7 +42,6 @@ class GatedState(BaseState):
     def run(self, previous_transition):
         if previous_transition.origin is not START:
             if not hasattr(self, 'REGISTERED_STATES') or previous_transition.origin not in self.REGISTERED_STATES:
-                import ipdb;ipdb.set_trace() # FIXME: breakpoint!
                 raise ForbiddenTransitionError(
                     "{} not allowed to transition to {}".format(
                         previous_transition.origin, self.__class__
