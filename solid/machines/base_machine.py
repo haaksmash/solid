@@ -55,6 +55,19 @@ class _BaseMachineMeta(type):
 
 
 class BaseMachine(object):
+    """A simple state machine. Define states as inner classes
+    which inherit from STATE_CLASS (default: BaseState), and
+    call the start() method of an instance to get the machine
+    spinning:
+        class MyMachine(BaseMachine):
+            @is_entry_state
+            class Entry(BaseState):
+                def body():
+                    ...
+
+        machine = MyMachine()
+        machine.start()
+    """
 
     __metaclass__ = _BaseMachineMeta
 

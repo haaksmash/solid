@@ -28,7 +28,26 @@ class ForbiddenTransitionError(IllegalTransitionError): pass
 
 
 class GatedState(BaseState):
-    """ Raises an IllegalTransitionError if this state is being entered from an unregistered state."""
+    """ Raises an IllegalTransitionError if this state is being entered from an unregistered state.
+
+    Decorate other state classe with GatedState.can_receive to register them:
+
+        class MyMachine(BaseMachine):
+            class ShyState(GatedState):
+                def body():
+                    ...
+
+            @ShyState.can_receive
+            class GregariousState(BaseState):
+                def body():
+                    ...
+
+            class TooGregarious(BaseState):
+                def body():
+                    ...
+
+    GregariousState will be able to transition to ShyState, but TooGregarious is out of luck.
+    """
 
     @classmethod
     def can_receive(cls, state_class):
