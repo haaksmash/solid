@@ -36,5 +36,10 @@ class ReadOnlyStateWrapper(object):
     def __repr__(self):
         return u"<ReadOnly:{}>".format(self._instance)
 
+    def __eq__(self, other):
+        if not isinstance(other, ReadOnlyStateWrapper):
+            return NotImplemented
+
+        return self._instance == other._instance
 
 
