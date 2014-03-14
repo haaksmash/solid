@@ -18,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 from solid.states import BaseState
-from solid.transition import END
+from solid.transition import END, Transition, START
 
 
 class _BaseMachineMeta(type):
@@ -27,7 +27,12 @@ class _BaseMachineMeta(type):
 
     def __new__(cls, name, bases, attrs):
         # do the normal instantiation
-        machine_class = super(_BaseMachineMeta, cls).__new__(cls, name, bases, attrs)
+        machine_class = super(_BaseMachineMeta, cls).__new__(
+            cls,
+            name,
+            bases,
+            attrs,
+        )
 
         # add a unique State inner base class to every instance of
         # _BaseMachineMeta
@@ -49,7 +54,12 @@ class _BaseMachineMeta(type):
 
         # re-instantiate, with the new State classes
         attrs['_states'] = states
-        machine_class = super(_BaseMachineMeta, cls).__new__(cls, name, bases, attrs)
+        machine_class = super(_BaseMachineMeta, cls).__new__(
+            cls,
+            name,
+            bases,
+            attrs,
+        )
         machine_class.State = state_class
         return machine_class
 
@@ -74,6 +84,7 @@ class BaseMachine(object):
     def __init__(self):
         self._return_value = None
         self._initialized_states = {}
+        self._history = []
         # instantiate the states for this instance of the machine
         for name, value in self._states.iteritems():
             state = value(parent_machine=self)
@@ -89,12 +100,20 @@ class BaseMachine(object):
             self._initialized_states[value] = state
 
     def start(self, **kwargs):
-        transition = self._entry_state(**kwargs)
+        transition = Transition(
+            origin=START,
+            target=self._entry_state.__class__,
+            **kwargs
+        )
+
         while transition.target is not END:
+            self._history.append(transition)
             transition = self._initialized_states[transition.target].run(
                 previous_transition=transition,
             )
 
+        # add the transition to END to history as well.
+        self._history.append(transition)
         return self._return_value
 
     def set_return_value(self, value):
@@ -102,3 +121,6 @@ class BaseMachine(object):
         run a summary return value"""
         self._return_value = value
 
+    @property
+    def history(self):
+        return list(self._history)

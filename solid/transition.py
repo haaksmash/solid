@@ -39,7 +39,9 @@ class Transition(object):
         return u"<Transition:{} --> {}>".format(self.origin, self.target)
 
 END = namedtuple('END', [])()
-START= namedtuple('START', [])()
+START = namedtuple('START', [])()
+
 
 def to(target, **kwargs):
+    """Transition factory function."""
     return Transition(target, None, **kwargs)

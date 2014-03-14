@@ -28,7 +28,9 @@ class ReadOnlyStateWrapper(object):
         if name == "_instance":
             super(ReadOnlyStateWrapper, self).__setattr__(name, value)
         else:
-            raise AttributeError(u"Can't set attribute -- ReadOnlyWrapped object.")
+            raise AttributeError(
+                u"Can't set attribute -- ReadOnlyWrapped object.",
+            )
 
     def __getattr__(self, name):
         return getattr(self._instance, name)
@@ -43,3 +45,9 @@ class ReadOnlyStateWrapper(object):
         return self._instance == other._instance
 
 
+class classproperty(object):
+    def __init__(self, getter):
+        self.getter = getter
+
+    def __get__(self, instance, owner):
+        return self.getter(owner)

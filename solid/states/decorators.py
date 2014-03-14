@@ -17,7 +17,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
-import functools
 from solid.transition import Transition, START
 
 
@@ -29,23 +28,14 @@ def is_entry_state(state_class):
            function.
     """
     state_class.IS_ENTRY_STATE = True
-    # patch the run method so it doesn't need an explicit transition
-    old_run = state_class.run
-    def new_run(self, **kwargs):
-        previous_transition = kwargs.pop('previous_transition', None)
-        if previous_transition is None:
-            previous_transition = Transition(state_class, origin=START, **kwargs)
-
-        return old_run(
-            self,
-            previous_transition,
-        )
-    state_class.run = new_run
 
     def new_call(self, **body_args):
-        return self.run(**body_args)
+        starting_transition = Transition(
+            origin=START,
+            target=state_class,
+            **body_args
+        )
+        return self.run(starting_transition)
     state_class.__call__ = new_call
 
     return state_class
-
-
