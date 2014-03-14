@@ -22,7 +22,7 @@ from collections import namedtuple
 
 class Transition(object):
 
-    def __init__(self, target, origin=None, **kwargs):
+    def __init__(self, origin, target,  **kwargs):
         self._target_state_class = target
         self._target_kwargs = kwargs
         self.origin = origin
@@ -38,10 +38,20 @@ class Transition(object):
     def __repr__(self):
         return u"<Transition:{} --> {}>".format(self.origin, self.target)
 
+    def __eq__(self, other):
+        if not isinstance(other, Transition):
+            return NotImplemented
+
+        return bool(
+            self.target == other.target and
+            self.origin == other.origin and
+            self.kwargs == other.kwargs
+        )
+
 END = namedtuple('END', [])()
 START = namedtuple('START', [])()
 
 
 def to(target, **kwargs):
     """Transition factory function."""
-    return Transition(target, None, **kwargs)
+    return Transition(None, target, **kwargs)

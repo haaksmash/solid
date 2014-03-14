@@ -17,30 +17,30 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
+from solid.machines import BaseMachine
+from solid.states import BaseState, is_entry_state
+from solid.transition import to, Transition, END
 
-from solid.states.base_state import BaseState
-from solid.transition import Transition
-from solid.util import classproperty
 
+class TestTransitionTracking(object):
+    class SimpleMachine(BaseMachine):
 
-class BoomerangState(BaseState):
+        @is_entry_state
+        class SimpleState(BaseState):
+            def body(self):
+                return to(TestTransitionTracking.SimpleMachine.SimplerState)
 
-    @classproperty
-    def IS_ENTRY_STATE(cls):
-        return False
+        class SimplerState(BaseState):
+            def body(self):
+                pass
 
-    def on_entry(self, previous_transition):
-        self.__previous_state = previous_transition.origin
+    def test_transitions_are_tracked(self):
+        machine = self.SimpleMachine()
+        machine.start()
 
-    def on_exit(self, expected_transition):
-        """Always return to the previous state."""
-        transition = super(BoomerangState, self).on_exit(expected_transition)
+        expected_history = [
+            Transition(machine.SimpleState, machine.SimplerState),
+            Transition(machine.SimplerState, END),
+        ]
 
-        if transition is None:
-            transition = expected_transition
-
-        return Transition(
-            origin=self.__class__,
-            target=self.__previous_state,
-            **transition.kwargs
-        )
+        assert machine.history == expected_history

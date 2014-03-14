@@ -18,7 +18,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 from solid.states import BaseState
-from solid.transition import END, Transition, START
+from solid.transition import END
 
 
 class _BaseMachineMeta(type):
@@ -100,12 +100,7 @@ class BaseMachine(object):
             self._initialized_states[value] = state
 
     def start(self, **kwargs):
-        transition = Transition(
-            origin=START,
-            target=self._entry_state.__class__,
-            **kwargs
-        )
-
+        transition = self._entry_state(**kwargs)
         while transition.target is not END:
             self._history.append(transition)
             transition = self._initialized_states[transition.target].run(

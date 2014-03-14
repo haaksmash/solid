@@ -43,7 +43,9 @@ class BaseState(object):
         if self.parent_machine is None:
             self._parent_machine = value
         else:
-            raise AttributeError("Can't reset parent_machine on {}".format(self))
+            raise AttributeError(
+                "Can't reset parent_machine on {}".format(self),
+            )
 
     @property
     def previous_state(self):
@@ -60,7 +62,6 @@ class BaseState(object):
             return ReadOnlyStateWrapper(self._next_state)
         except AttributeError:
             return None
-
 
     @classmethod
     def get_instance_attr_name(cls):
@@ -104,17 +105,25 @@ class BaseState(object):
 
         if self.on_entry(ReadOnlyStateWrapper(previous_transition)) is False:
             # abort if the on_entry is False
-            return Transition(END, self.__class__)
+            return Transition(
+                origin=self.__class__,
+                target=END,
+            )
         else:
             next_state_transition = self.do_body(previous_transition)
             if next_state_transition is None:
-                next_state_transition = Transition(END, origin=self.__class__)
+                next_state_transition = Transition(
+                    origin=self.__class__,
+                    target=END,
+                )
+
             if next_state_transition.origin is None:
                 next_state_transition.origin = self.__class__
 
             # on_exit can override the next_state for whatever reason (error
             # transitioning, for example)
-            next_state_transition = self.on_exit(ReadOnlyStateWrapper(next_state_transition)) or next_state_transition
+            next_state_transition = self.on_exit(
+                ReadOnlyStateWrapper(next_state_transition)
+            ) or next_state_transition
 
             return next_state_transition
-
