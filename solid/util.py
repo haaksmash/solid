@@ -43,11 +43,3 @@ class ReadOnlyStateWrapper(object):
             return NotImplemented
 
         return self._instance == other._instance
-
-
-class classproperty(object):
-    def __init__(self, getter):
-        self.getter = getter
-
-    def __get__(self, instance, owner):
-        return self.getter(owner)

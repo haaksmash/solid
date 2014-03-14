@@ -20,14 +20,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from solid.states.base_state import BaseState
 from solid.transition import Transition
-from solid.util import classproperty
 
 
 class BoomerangState(BaseState):
-
-    @classproperty
-    def IS_ENTRY_STATE(cls):
-        return False
 
     def on_entry(self, previous_transition):
         self.__previous_state = previous_transition.origin
