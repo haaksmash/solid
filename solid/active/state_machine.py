@@ -1,3 +1,22 @@
+"""
+Copyright (C) 2014 Haak Saxberg
+
+This file is part of Solid, a state machine package for Python.
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 3
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+"""
 from solid.exception import IllegalTransitionError
 from solid.active.transition import Transition
 
@@ -26,9 +45,10 @@ class Machine(object):
         self._current_state = None
         self._history = []
 
+        # instantiate the transitions registered to this machine.
         self._transition_set = set()
-        for value in self._transitions:
-            transition = value(value.FROM, value.TO, parent_machine=self)
+        for transition_class in self._transitions:
+            transition = transition_class(transition_class.FROM, transition_class.TO, parent_machine=self)
 
             self._transition_set.add(transition)
 
@@ -72,15 +92,15 @@ class Machine(object):
     def transition_to(self, to_state, *args, **kwargs):
         transition = self._find_transition(to_state)
 
-        transition.pre_run(*args, **kwargs)
+        transition.signal_before_begin(*args, **kwargs)
         transition.run(*args, **kwargs)
         # transition has completed, update our current state...
         self._current_state = to_state
-        # and inform history.
+        # ...and inform history.
         self._history.append(transition)
 
-        # finally, do any signalling
-        transition.post_run(*args, **kwargs)
+        # finally, do any signaling
+        transition.signal_after_complete(*args, **kwargs)
 
     @property
     def current_state(self):
@@ -92,4 +112,4 @@ class Machine(object):
 
     @property
     def history(self):
-        return self._history
+        return list(self._history)
