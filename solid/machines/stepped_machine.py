@@ -18,28 +18,26 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
+from solid.machines.base_machine import BaseMachine
+from solid.transition import END
 
-class ReadOnlyStateWrapper(object):
 
-    def __init__(self, instance):
-        self._instance = instance
+class SteppedMachine(BaseMachine):
 
-    def __setattr__(self, name, value):
-        if name == "_instance":
-            super(ReadOnlyStateWrapper, self).__setattr__(name, value)
-        else:
-            raise AttributeError(
-                u"Can't set attribute -- ReadOnlyWrapped object.",
-            )
+    def start(self, **kwargs):
+        """Only enter the first state of the machine and add it to the
+        history; afterwards, use the step() function to progress."""
+        next_transition = self._entry_state(**kwargs)
+        self._history.append(next_transition)
 
-    def __getattr__(self, name):
-        return getattr(self._instance, name)
+    def step(self):
+        """Follow the last returned transition."""
+        previous = self._history[-1]
 
-    def __repr__(self):
-        return u"<ReadOnly:{}>".format(self._instance)
+        if previous.target is END:
+            return self._return_value
 
-    def __eq__(self, other):
-        if not isinstance(other, ReadOnlyStateWrapper):
-            return NotImplemented
-
-        return self._instance == other._instance
+        next_transition = self._initialized_states[previous.target].run(
+            previous_transition=previous,
+        )
+        self._history.append(next_transition)

@@ -18,28 +18,24 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
+from solid.states.base_state import BaseState
+from solid.transition import Transition
 
-class ReadOnlyStateWrapper(object):
 
-    def __init__(self, instance):
-        self._instance = instance
+class BoomerangState(BaseState):
 
-    def __setattr__(self, name, value):
-        if name == "_instance":
-            super(ReadOnlyStateWrapper, self).__setattr__(name, value)
-        else:
-            raise AttributeError(
-                u"Can't set attribute -- ReadOnlyWrapped object.",
-            )
+    def on_entry(self, previous_transition):
+        self.__previous_state = previous_transition.origin
 
-    def __getattr__(self, name):
-        return getattr(self._instance, name)
+    def on_exit(self, expected_transition):
+        """Always return to the previous state."""
+        transition = super(BoomerangState, self).on_exit(expected_transition)
 
-    def __repr__(self):
-        return u"<ReadOnly:{}>".format(self._instance)
+        if transition is None:
+            transition = expected_transition
 
-    def __eq__(self, other):
-        if not isinstance(other, ReadOnlyStateWrapper):
-            return NotImplemented
-
-        return self._instance == other._instance
+        return Transition(
+            origin=self.__class__,
+            target=self.__previous_state,
+            **transition.kwargs
+        )

@@ -17,29 +17,30 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
+from solid.machines import BaseMachine
+from solid.states import BaseState, is_entry_state
+from solid.transition import to, Transition, END
 
 
-class ReadOnlyStateWrapper(object):
+class TestTransitionTracking(object):
+    class SimpleMachine(BaseMachine):
 
-    def __init__(self, instance):
-        self._instance = instance
+        @is_entry_state
+        class SimpleState(BaseState):
+            def body(self):
+                return to(TestTransitionTracking.SimpleMachine.SimplerState)
 
-    def __setattr__(self, name, value):
-        if name == "_instance":
-            super(ReadOnlyStateWrapper, self).__setattr__(name, value)
-        else:
-            raise AttributeError(
-                u"Can't set attribute -- ReadOnlyWrapped object.",
-            )
+        class SimplerState(BaseState):
+            def body(self):
+                pass
 
-    def __getattr__(self, name):
-        return getattr(self._instance, name)
+    def test_transitions_are_tracked(self):
+        machine = self.SimpleMachine()
+        machine.start()
 
-    def __repr__(self):
-        return u"<ReadOnly:{}>".format(self._instance)
+        expected_history = [
+            Transition(machine.SimpleState, machine.SimplerState),
+            Transition(machine.SimplerState, END),
+        ]
 
-    def __eq__(self, other):
-        if not isinstance(other, ReadOnlyStateWrapper):
-            return NotImplemented
-
-        return self._instance == other._instance
+        assert machine.history == expected_history
