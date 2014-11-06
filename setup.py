@@ -25,7 +25,7 @@ from setuptools import find_packages
 
 setup(
     name="solid",
-    version='0.1.2',
+    version='0.1.3',
     description="Pythonic state machines",
     long_description=open("README.txt").read(),
     author="Haak Saxberg",
