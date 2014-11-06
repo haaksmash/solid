@@ -5,7 +5,7 @@ A state machine implementation for Python --- which *isn't* solely designed to p
 
 
 why state machines?
-------------------
+-------------------
 
 They're cool! Also, easy to reason about --- a state machine design enables you
 to compartmentalize responsibilites in a way that functions simply don't.
