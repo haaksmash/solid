@@ -1,0 +1,6 @@
+flowhub==0.5.4
+ipdb==0.8
+ipython==1.1.0
+mock==1.0.1
+pyflakes==0.5.0
+pytest==2.6.4

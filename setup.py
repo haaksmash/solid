@@ -19,25 +19,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 """
 
-from distutils.core import setup, Command
+from distutils.core import setup
 from setuptools import find_packages
-
-
-class PyTest(Command):
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        import sys
-        import subprocess
-        errno = subprocess.call([sys.executable, 'runtests.py'])
-
-        raise SystemExit(errno)
 
 
 setup(
@@ -49,9 +32,4 @@ setup(
     author_email="haak.erling@gmail.com",
     url="http://github.com/haaksmash/solid",
     packages=find_packages(),
-    cmdclass={'test': PyTest},
-    scripts=[
-    ],
-    install_requires=[
-    ],
 )
