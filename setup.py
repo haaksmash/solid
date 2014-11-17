@@ -27,7 +27,7 @@ setup(
     name="solid",
     version='0.1.3',
     description="Pythonic state machines",
-    long_description=open("README.txt").read(),
+    long_description=open("README.rst").read(),
     author="Haak Saxberg",
     author_email="haak.erling@gmail.com",
     url="http://github.com/haaksmash/solid",
