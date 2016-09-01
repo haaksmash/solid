@@ -21,13 +21,23 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 from distutils.core import setup
 from setuptools import find_packages
+import os
+
+
+def get_readme():
+    if os.path.isfile("README.txt"):
+        filename = "README.txt"
+    else:
+        filename = "README.rst"
+    with open(filename, 'r') as f:
+        return f.read()
 
 
 setup(
     name="solid",
-    version='0.1.3',
+    version='0.2.0',
     description="Pythonic state machines",
-    long_description=open("README.txt").read(),
+    long_description=get_readme(),
     author="Haak Saxberg",
     author_email="haak.erling@gmail.com",
     url="http://github.com/haaksmash/solid",
