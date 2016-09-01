@@ -1,4 +1,4 @@
-flowhub==0.5.4
+flowhub==0.6.2
 ipdb==0.8
 ipython==1.1.0
 mock==1.0.1
